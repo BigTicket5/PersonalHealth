@@ -10,11 +10,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import health.domain.User;
+import health.events.OnPasswordResetSubmittion;
 import health.events.OnRegistrationCompleteEvent;
 import health.service.UserService;
 
 @Component
-public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent>{
+public class PasswordResetListener implements ApplicationListener<OnPasswordResetSubmittion>{
 	@Autowired
     private UserService userService;
   
@@ -25,30 +26,30 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
     private JavaMailSender mailSender;
  
     @Override
-    public void onApplicationEvent(OnRegistrationCompleteEvent event) {
-        this.confirmRegistration(event);
+    public void onApplicationEvent(OnPasswordResetSubmittion event) {
+        this.PasswordReset(event);
     }
-    /* Sending confirmation email to user's email which he/she filled.
+    /* Sending Password reset request email to user's email which he/she filled.
      * */
-	private void confirmRegistration(OnRegistrationCompleteEvent event) {
+	private void PasswordReset(OnPasswordResetSubmittion event) {
 		// TODO Auto-generated method stub
 		User user = event.getUser();
 		String token = UUID.randomUUID().toString();
 		
-		userService.createVerificationToken(user, token);
+		userService.updateVerificationToken(user, token);
 		
 		String recipientAddress = user.getEmail();
-        String subject = "Registration Confirmation";
-        String confirmationUrl 
-          = event.getAppUrl() + "/regitrationConfirm?token=" + token;
-        confirmationUrl+="&user="+user.getFirstName()+"&"+user.getLastName();
+        String subject = "Password Reset Confirmation";
+        String resetUrl 
+          = event.getAppUrl() + "/passwordResetConfirm?token=" + token;
+        resetUrl += "&email=" + recipientAddress;
         
-        String message = messages.getMessage("message.regSucc", null, event.getLocale());
+        String message = messages.getMessage("message.resetpassd", null, event.getLocale());
          
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);
-        email.setText(message + "http://localhost:8080" + confirmationUrl);
+        email.setText(message + "http://localhost:8080" + resetUrl);
         mailSender.send(email);
 		
 	}

@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService{
 	public void saveUser(User user) {
 		// TODO Auto-generated method stub
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		System.out.println("encode pass"+bCryptPasswordEncoder.encode(user.getPassword()));
 		user.setIsActive(1);
 		Role userRole = roleRepository.findByRole("ADMIN");
 		user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void createVerificationToken(User user, String token) {
 		// TODO Auto-generated method stub
-		VerificationToken myToken = new VerificationToken(token, user);
+		VerificationToken myToken = new VerificationToken(token, user, 0);
         tokenRepository.save(myToken);
 		
 	}
@@ -71,6 +70,16 @@ public class UserServiceImpl implements UserService{
 	public int enableUser(User user) {
 		// TODO Auto-generated method stub
 		return userRepository.enableUser(user.isEnabled(), user.getEmail());
+	}
+
+	@Override
+	public void updateVerificationToken(User user, String token) {
+		// TODO Auto-generated method stub
+		VerificationToken myToken = new VerificationToken(token, user, 1);
+		if(myToken.getUser()!=null)
+		{
+			tokenRepository.updateToken(token,myToken.getExpiryDate(),user);
+		}
 	}
 
 }

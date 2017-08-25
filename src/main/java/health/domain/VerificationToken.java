@@ -17,7 +17,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name="verification_token")
 public class VerificationToken {
-	private static final int EXPIRATION = 60 * 24;
+	private static final int EMAIL_EXPIRATION = 60 * 24;
+	private static final int PASSWD_EXPIRATION = 30;
 	
 	@Id
 	@Column(name="token_id")
@@ -58,13 +59,20 @@ public class VerificationToken {
         cal.add(Calendar.MINUTE, expiryTimeInMinutes);
         return new Date(cal.getTime().getTime());
     }
-	public VerificationToken(String token, User user) {
+	public VerificationToken(String token, User user, int flag) {
 		// TODO Auto-generated constructor stub
 		this.token = token;
 		this.user = user;
-		this.expiryDate = calculateExpiryDate(EXPIRATION);
+		switch (flag){
+			case 0:
+				this.expiryDate = calculateExpiryDate(EMAIL_EXPIRATION);
+				break;
+			case 1:
+				this.expiryDate = calculateExpiryDate(PASSWD_EXPIRATION);
+			default:
+				break;
+		}
 	}
-	
 
 }
 

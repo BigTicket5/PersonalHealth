@@ -14,9 +14,12 @@ public interface UserRepository extends JpaRepository<User,Long> {
 	User findByFirstName(String firstName);
 	User findByEmail(String email);
 	
+	//update user set their status to enabled since they go through email
+	//validation
+	
 	@Modifying(clearAutomatically = true)
 	@Transactional(propagation=Propagation.REQUIRED)
 	@Query("update User u set u.enabled = :enabled where u.email = :email")
-//	int enableUser(@Param("enabled") boolean enabled,@Param("email") String email);
 	int enableUser(@Param("enabled")boolean enabled, @Param("email")String email);
+	
 }
