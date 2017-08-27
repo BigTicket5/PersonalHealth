@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import health.domain.User;
 import health.events.OnPasswordResetSubmittion;
-import health.events.OnRegistrationCompleteEvent;
 import health.service.UserService;
 
 @Component
@@ -35,13 +34,10 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
 		// TODO Auto-generated method stub
 		User user = event.getUser();
 		String token = UUID.randomUUID().toString();
-		
 		userService.updateVerificationToken(user, token);
-		
 		String recipientAddress = user.getEmail();
         String subject = "Password Reset Confirmation";
-        String resetUrl 
-          = event.getAppUrl() + "/passwordResetConfirm?token=" + token;
+        String resetUrl = "/resetpassword/update?token=" + token;
         resetUrl += "&email=" + recipientAddress;
         
         String message = messages.getMessage("message.resetpassd", null, event.getLocale());
