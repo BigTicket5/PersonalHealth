@@ -1,6 +1,7 @@
 package health.service;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,5 +82,16 @@ public class UserServiceImpl implements UserService{
 			tokenRepository.updateToken(token,myToken.getExpiryDate(),user);
 		}
 	}
+
+	@Override
+	public void disableVerificationToken(User user, String token) {
+		// TODO Auto-generated method stub
+		VerificationToken myToken = this.getVerificationToken(token);
+		if(myToken!=null){
+			tokenRepository.updateToken(token,new Date(),user);
+		}
+		
+	}
+	
 
 }

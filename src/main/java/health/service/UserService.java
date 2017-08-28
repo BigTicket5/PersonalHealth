@@ -9,6 +9,7 @@ public interface UserService {
 	public User getUserbyValiToken(String verificationToken);
 	public void createVerificationToken(User user, String token);
 	public void updateVerificationToken(User user, String token);
+	public void disableVerificationToken(User user, String token);
 	public VerificationToken getVerificationToken(String VerificationToken);
 	public int enableUser(User user);
 }
