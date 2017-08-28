@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>Reset Password</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" ></link>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-xs-6">
+							<p>Reset Password</p>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-lg-12">
+							<form th:action="@{/resetpassword/update}" method="POST" class="form-signin" id="login-form" style="display: block;">
+								<div class="form-group">
+									<input type="password" id="password" name="password"  tabindex="1" th:placeholder="Password" class="form-control" />
+								</div>
+								<div class="form-group">
+									<input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control"  placeholder="Confirm Password"/>
+								</div>
+								<input type="hidden" name="token" th:value="${token}"/>
+								<div class="form-group">
+									<div class="row">
+										<div class="col-sm-6 col-sm-offset-3">
+											<input type="submit" name="update-submit" id="update-submit" tabindex="3" class="form-control btn btn-login" value="Reset"/>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

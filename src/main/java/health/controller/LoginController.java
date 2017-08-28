@@ -1,12 +1,19 @@
 package health.controller;
 
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,20 +87,31 @@ public class LoginController {
 	    if (verificationToken == null) {
 	        String message = messages.getMessage("auth.message.invalidToken", null, locale);
 	        model.addObject("message", message);
-	        model.setViewName("invalidlink");
+	        model.setViewName("/invalidlink/token");
 	        return model;
 	    }
-	    User user = verificationToken.getUser();
-	    model.addObject("user", user);
+	    Calendar cal = Calendar.getInstance();
+	    if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+	        String messageValue = messages.getMessage("auth.message.expired", null, locale);
+	        model.addObject("message", messageValue);
+	        model.setViewName("/invalidlink/expired");
+	        return model;
+	    } 
+	    model.addObject("token", token);
 	    model.setViewName("/resetpassword/update");
 	    return model;
 	}
 	
-	@RequestMapping(value="/resetpassword/update",method=RequestMethod.GET)
-	public ModelAndView updatepassword(){
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("/resetpassword/update");
-		return modelAndView;
+	@RequestMapping(value="/resetpassword/update",method=RequestMethod.POST)
+	public ModelAndView updatepassword(WebRequest request, @RequestParam Map<String,String>requestParams){
+		ModelAndView model= new ModelAndView();
+		User user = userService.getVerificationToken(requestParams.get("token")).getUser();
+		if(user!=null){
+			user.setPassword(requestParams.get("password"));
+			userService.saveUser(user);
+		}
+		model.setViewName("login");
+		return model;
 	}
 }
 

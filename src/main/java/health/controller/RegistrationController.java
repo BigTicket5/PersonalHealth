@@ -10,7 +10,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +22,8 @@ import health.domain.User;
 import health.domain.VerificationToken;
 import health.events.OnRegistrationCompleteEvent;
 import health.service.UserService;
+
+
 @Controller
 public class RegistrationController {
 	
@@ -82,28 +83,28 @@ public class RegistrationController {
 	}
 	
 	@RequestMapping(value = "/regitrationConfirm*", method = RequestMethod.GET)
-	public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
+	public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") String token) {
 	    Locale locale = request.getLocale();
-	     
+	    ModelAndView model = new ModelAndView();
 	    VerificationToken verificationToken = userService.getVerificationToken(token);
 	    if (verificationToken == null) {
 	        String message = messages.getMessage("auth.message.invalidToken", null, locale);
-	        model.addAttribute("message", message);
-	        return "redirect:/badUser?lang=" + locale.getLanguage();
+	        model.addObject("message", message);
+	        model.setViewName("/invalidlink/token");
+	        return model;
 	    }
-	     
 	    User user = verificationToken.getUser();
 	    Calendar cal = Calendar.getInstance();
 	    if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
 	        String messageValue = messages.getMessage("auth.message.expired", null, locale);
-	        model.addAttribute("message", messageValue);
-	        return "redirect:/badUser?lang=" + locale.getLanguage();
+	        model.addObject("message", messageValue);
+	        model.setViewName("/invalidlink/expired");
+	        return model;
 	    } 
-	     
 	    user.setEnabled(true); 
 	    userService.enableUser(user); 
-	    return "redirect:/login?lang=" + request.getLocale().getLanguage(); 
+	    model.setViewName("login");
+	    return model; 
 	}
-	
 
 }
