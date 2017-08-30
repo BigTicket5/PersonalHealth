@@ -52,6 +52,28 @@
         <div class ="col-md-4 text-left">
         	<a class="btn btn-primary" href="#" role="button">New Record</a>
         </div>
+        
+       	<div class="col-md-6  col-md-offset-2 text-left">
+       		<table class="table table-hover">
+       			<thead>
+       				<tr>
+       					<th th:text="${username} + '\'s Health Records'"/>
+       				</tr>
+       			</thead>
+	            <tr th:each="record: ${recordlist}">
+	            	<td>
+	            		<table>
+	            			<tr>
+	            				<td th:text="${record.inputdate}"></td>
+	            			</tr>
+	            			<tr>
+	            				<td th:text="${record.record}"></td>
+	            			</tr>
+	            		</table>
+	            	</td>
+	            </tr>
+        	</table>
+       	</div>
     </div>
 </body>
 
