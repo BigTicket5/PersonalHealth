@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import health.domain.User;
 import health.domain.VerificationToken;
@@ -83,27 +85,31 @@ public class RegistrationController {
 	}
 	
 	@RequestMapping(value = "/regitrationConfirm*", method = RequestMethod.GET)
-	public ModelAndView confirmRegistration(WebRequest request, @RequestParam("token") String token) {
+	public RedirectView confirmRegistration(WebRequest request, @RequestParam("token") String token
+			,RedirectAttributes  redirectAttributes) {
 	    Locale locale = request.getLocale();
-	    ModelAndView model = new ModelAndView();
+	    RedirectView model = new RedirectView();
 	    VerificationToken verificationToken = userService.getVerificationToken(token);
 	    if (verificationToken == null) {
 	        String message = messages.getMessage("auth.message.invalidToken", null, locale);
-	        model.addObject("message", message);
-	        model.setViewName("/invalidlink/token");
+	        redirectAttributes.addFlashAttribute("message", message);
+	        model.setContextRelative(true);
+	        model.setUrl("/invalidlink/token");
 	        return model;
 	    }
 	    User user = verificationToken.getUser();
 	    Calendar cal = Calendar.getInstance();
 	    if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-	        String messageValue = messages.getMessage("auth.message.expired", null, locale);
-	        model.addObject("message", messageValue);
-	        model.setViewName("/invalidlink/expired");
+	        String message = messages.getMessage("auth.message.expired", null, locale);
+	        redirectAttributes.addFlashAttribute("message", message);
+	        model.setContextRelative(true);
+	        model.setUrl("/invalidlink/token");
 	        return model;
 	    } 
 	    user.setEnabled(true); 
 	    userService.enableUser(user); 
-	    model.setViewName("login");
+	    redirectAttributes.addFlashAttribute("email",user.getEmail());
+	    model.setUrl("/login");;
 	    return model; 
 	}
 
